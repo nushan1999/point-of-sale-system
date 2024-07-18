@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ijse.posspring.dto.ItemCategoryDto;
 import com.ijse.posspring.entity.ItemCategory;
 import com.ijse.posspring.service.ItemCategoryService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +41,11 @@ public class ItemCategoryController {
     }
 
     @PostMapping("/itemCategories")
-    public ResponseEntity<ItemCategory> createItemCategory(@RequestBody ItemCategory itemCategory) {
+    public ResponseEntity<ItemCategory> createItemCategory(@RequestBody ItemCategoryDto itemCategoryDto) {
+
+        ItemCategory itemCategory = new ItemCategory();
+        itemCategory.setName(itemCategoryDto.getName());
+        
         ItemCategory createItemCategory = itemCategoryService.createItemCategory(itemCategory);
         return ResponseEntity.status(201).body(createItemCategory);
     }
