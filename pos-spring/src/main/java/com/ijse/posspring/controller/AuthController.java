@@ -18,7 +18,7 @@ import com.ijse.posspring.security.jwt.JwtUtils;
 public class AuthController {
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager; //autowired authentication manager
 
     @Autowired
     private JwtUtils jwtUtils;
