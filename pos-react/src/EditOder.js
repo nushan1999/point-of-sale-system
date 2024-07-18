@@ -1,30 +1,45 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth } from "./utils/AuthContext";
 
 function EditOrder() {
+
+    const { isAuthenticated, jwtToken } = useAuth();
 
     const {id} = useParams();
 
     const [order, setOrder] = useState(null);
     const [items, setItems] = useState(null);
 
+    const config = {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      }
+
     useEffect(() => {
-        axios.get(`http://localhost:8080/orders/${id}`)
+
+        if (isAuthenticated) {
+
+            axios.get(`http://localhost:8080/orders/${id}`, config)
             .then(function(response) {
                 setOrder(response.data);
             }).catch(function(error) {
                 console.log(error);
             });
 
-        axios.get('http://localhost:8080/items')
+        axios.get('http://localhost:8080/items', config)
             .then(function(response) {
                 setItems(response.data);
             }).catch(function(error) {
                 console.log(error);
             });
 
-    },[])
+        }
+        
+
+    },[isAuthenticated])
 
     return (
         <div className="container">
@@ -61,7 +76,7 @@ function EditOrder() {
                                             <td>{item.price}</td>
                                             <td>
                                                 <button type="button" className="btn btn-danger btn-sm" onClick={() => {
-                                                    axios.delete(`http://localhost:8080/orders/${id}/item/${item.id}`)
+                                                    axios.delete(`http://localhost:8080/orders/${id}/item/${item.id}`, config)
                                                         .then (function(response) {
                                                             setOrder(response.data);
                                                         }).catch (function(error) {
@@ -87,7 +102,7 @@ function EditOrder() {
                                                     quantity:1
                                                 }
 
-                                                axios.post(`http://localhost:8080/orders/${id}/addItems`, data)
+                                                axios.post(`http://localhost:8080/orders/${id}/addItems`, data, config)
                                                     .then (function(response) {
                                                         setOrder(response.data);
                                                     }).catch (function(error) {

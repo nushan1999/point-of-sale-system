@@ -1,25 +1,39 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "./utils/AuthContext";
 
 function Orders() {
+
+    const { isAuthenticated, jwtToken } = useAuth();
 
     const [orders, setOrders] = useState(null);
 
     const navigate = useNavigate();
 
+    const config = {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      }
+
     useEffect(() => {
-        axios.get("http://localhost:8080/orders")
+
+        if (isAuthenticated) {
+            axios.get("http://localhost:8080/orders", config)
             .then(function(response){
                 setOrders(response.data);
             })
             .catch(function(error){
                 console.log(error);
             })
-    },[])
+
+        }
+        
+    },[isAuthenticated])
 
     function createOrder() {
-        axios.post("http://localhost:8080/orders")
+        axios.post("http://localhost:8080/orders", {}, config)
             .then(function(response){
                 navigate(`/orders/${response.data.id}/editOrder`)
             })

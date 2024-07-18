@@ -1,19 +1,31 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useAuth } from "./utils/AuthContext";
 
 function ItemCategories() {
 
+    const { isAuthenticated, jwtToken } = useAuth();
+
     const [itemCategories, setItemCategories] = useState(null);
 
+    const config = {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      }
+
     useEffect(() => {
-        axios.get("http://localhost:8080/itemCategories")
+        if (isAuthenticated) {
+            axios.get("http://localhost:8080/itemCategories", config)
             .then(function(response) {
                 setItemCategories(response.data);
             })
             .catch(function (error){
                 console.log(error);
             });
-    },[])
+
+        }
+    },[isAuthenticated])
     
     return(
         <div>
@@ -23,12 +35,10 @@ function ItemCategories() {
                 return (
                     <div key = {itemCategory.id}>
                         <p>{itemCategory.name}</p>
-
                     </div>
                 )
             })
             }
-
         </div>
     )
 

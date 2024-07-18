@@ -25,6 +25,9 @@ function Home() {
               <Link to="/stocks" className="list-group-item list-group-item-action">
                 Stocks
               </Link>
+              <Link to="/orders" className="list-group-item list-group-item-action">
+                Orders
+              </Link>
             </div>
 
             {isAuthenticated && (

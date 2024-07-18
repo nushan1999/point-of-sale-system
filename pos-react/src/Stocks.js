@@ -1,7 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useAuth } from "./utils/AuthContext";
 
 function Stocks(){
+
+    const { isAuthenticated, jwtToken } = useAuth();
 
     const [stocks, setStocks] = useState(null);
     const [stockId, setStockId] = useState(null);
@@ -12,8 +15,17 @@ function Stocks(){
 
     const [edit, setEdit] = useState(null);
 
+    const config = {
+        headers: {
+          Authorization: `Bearer ${jwtToken}`
+        }
+      }
+
     useEffect(() => {
-        axios.get("http://localhost:8080/stocks")
+
+        if (isAuthenticated) {
+
+            axios.get("http://localhost:8080/stocks", config)
             .then(function(response) {
                 setStocks(response.data);
             })
@@ -21,7 +33,7 @@ function Stocks(){
                 console.log(error);
             });
 
-        axios.get("http://localhost:8080/items")
+        axios.get("http://localhost:8080/items", config)
             .then(function (response) {
                 setItems(response.data);
             })
@@ -29,11 +41,14 @@ function Stocks(){
                 console.log(error);
         });
 
-    },[])
+        }
+        
+
+    },[isAuthenticated])
 
     function getStocks(){
   
-        axios.get("http://localhost:8080/stocks")
+        axios.get("http://localhost:8080/stocks", config)
           .then(function (response) {
             setStocks(response.data);
           })
@@ -60,7 +75,7 @@ function Stocks(){
           quantity: quantity
         }
     
-        axios.post("http://localhost:8080/stocks",data)
+        axios.post("http://localhost:8080/stocks",data, config)
           .then(function(response){
             getStocks();
             console.log(response);
@@ -79,7 +94,7 @@ function Stocks(){
           itemId: item.id
         }
     
-        axios.put("http://localhost:8080/stocks/" + edit, data)
+        axios.put("http://localhost:8080/stocks/" + edit, data, config)
           .then(function(response){
             getStocks();
             setEdit(null);
