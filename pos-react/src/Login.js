@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useState } from "react";
 import { useAuth } from "./utils/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -70,6 +70,12 @@ const LoginPage = () => {
                   </button>
                 </div>
               </form>
+              <div className="mt-3 text-center">
+                New User?{" "}
+                <Link to="/users" className="btn btn-link">
+                  Sign up
+                </Link>
+              </div>
             </div>
           </div>
         </div>

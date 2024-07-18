@@ -10,6 +10,7 @@ import Home from './Home';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './utils/AuthContext';
 import ProtectedRoutes from './utils/ProtectedRoutes';
+import Users from "./Users";
 
 
 function App() {
@@ -37,6 +38,9 @@ function App() {
           </Route>
 
           {/*Unauthenticated Routes*/}
+
+          <Route path='/users' element={<Users />} />
+
           <Route path = "/login" element={<LoginPage />}/>
 
         </Routes>
