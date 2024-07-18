@@ -13,6 +13,5 @@ public class ItemDto {
     private Double price;
     private String description;
     private Long categoryId;
-    private Long stockId;
 
 }

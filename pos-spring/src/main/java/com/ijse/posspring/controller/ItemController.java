@@ -55,9 +55,6 @@ public class ItemController {
         ItemCategory category = itemCategoryService.getItemCategoryById(itemDto.getCategoryId());
         item.setCategory(category);
 
-        Stock stock = stockService.getStockById(itemDto.getStockId());
-        item.setStock(stock);
-
         return itemService.createItem(item);
     }
 
@@ -71,9 +68,6 @@ public class ItemController {
 
         ItemCategory category = itemCategoryService.getItemCategoryById(itemDto.getCategoryId());
         item.setCategory(category);
-
-        Stock stock = stockService.getStockById((itemDto.getStockId()));
-        item.setStock(stock);
 
         Item updateItem = itemService.updateItem(id, item);
 
