@@ -35,12 +35,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(Long id, User user) {
+    public User updateUser(Long id, User user, String password) {
         User existUser = userRepository.findById(id).orElse(null);
-        if (existUser != null) {
+        if (existUser != null && passwordEncoder.matches(password, existUser.getPassword())) {
             existUser.setUsername(user.getUsername());
             existUser.setEmail(user.getEmail());
-            existUser.setPassword(user.getPassword());
+            existUser.setPassword(passwordEncoder.encode(user.getPassword()));
             return userRepository.save(existUser);
         } else {
             return null;
@@ -48,8 +48,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+    public boolean deleteUser(Long id, String password) {
+        User existUser = userRepository.findById(id).orElse(null);
+        if (existUser != null && passwordEncoder.matches(password, existUser.getPassword())) {
+            userRepository.deleteById(id);
+            return true;
+        } else {
+            return false;  // Return false if password is incorrect
+        }
     }
-
 }

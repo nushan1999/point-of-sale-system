@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ijse.posspring.entity.User;
@@ -46,13 +47,23 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
-    public User updateUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.updateUser(id, user);
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user, @RequestParam String password) {
+        User updatedUser = userService.updateUser(id, user, password);
+        if (updatedUser != null) {
+            return ResponseEntity.status(200).body(updatedUser);
+        } else {
+            return ResponseEntity.status(403).build();  // Return 403 if password is incorrect
+        }
     }
 
     @DeleteMapping("/users/{id}")
-    public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id, @RequestParam String password) {
+        boolean isDeleted = userService.deleteUser(id, password);
+        if (isDeleted) {
+            return ResponseEntity.status(200).build();
+        } else {
+            return ResponseEntity.status(403).build();  // Return 403 if password is incorrect
+        }
     }
 
 }

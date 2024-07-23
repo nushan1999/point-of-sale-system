@@ -9,10 +9,16 @@ function Users() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+
   const [edit, setEdit] = useState(null);
 
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  const [inputPassword, setInputPassword] = useState("");
+  const [deleteId, setDeleteId] = useState(null);
+  const [deleteUsername, setDeleteUsername] = useState("");
+
 
   const config = {
     headers: {
@@ -22,14 +28,7 @@ function Users() {
 
   useEffect(() => {
     if (isAuthenticated) {
-      axios
-        .get("http://localhost:8080/users", config)
-        .then(function (response) {
-          setUsers(response.data);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+      getUsers();
     }
   }, [isAuthenticated]);
 
@@ -56,6 +55,10 @@ function Users() {
     setEmail(event.target.value);
   }
 
+  function handleInputPassword(event) {
+    setInputPassword(event.target.value);
+  }
+
   function createUser(event) {
     event.preventDefault();
 
@@ -71,6 +74,7 @@ function Users() {
         getUsers();
         setMessage("User created successfully!");
         setError("");
+        resetForm();
         console.log(response);
       })
       .catch(function (error) {
@@ -90,7 +94,7 @@ function Users() {
     };
 
     axios
-      .put("http://localhost:8080/users/" + edit, data, config)
+      .put(`http://localhost:8080/users/${edit}?password=${inputPassword}`, data, config)
       .then(function (response) {
         getUsers();
         setEdit(null);
@@ -99,10 +103,43 @@ function Users() {
         console.log(response);
       })
       .catch(function (error) {
-        setError("Error updating user.");
+        if (error.response && error.response.status === 403) {
+          setError("Current password is incorrect.");
+        } else {
+          setError("Error updating user.");
+        }
         setMessage("");
         console.log(error);
       });
+  }
+
+  function deleteUser(event) {
+    event.preventDefault();
+    axios
+      .delete(`http://localhost:8080/users/${deleteId}?password=${inputPassword}`, config)
+      .then(function () {
+        getUsers();
+        setMessage("User deleted successfully!");
+        setError("");
+        setInputPassword("");
+        setDeleteId(null);
+        setDeleteUsername("");
+      })
+      .catch(function (error) {
+        if (error.response && error.response.status === 403) {
+          setError("Current password is incorrect.");
+        } else {
+          setError("Error deleting user.");
+        }
+        setMessage("");
+        console.log(error);
+      });
+  }
+
+  function resetForm() {
+    setUsername("");
+    setPassword("");
+    setEmail("");
   }
 
   return (
@@ -113,7 +150,7 @@ function Users() {
 
           {message && <div className="alert alert-success">{message}</div>}
           {error && <div className="alert alert-danger">{error}</div>}
-          
+
           {users &&
             users.map((row) => (
               <div className="card mb-3" key={row.id}>
@@ -128,6 +165,7 @@ function Users() {
                       setEdit(row.id);
                       setUsername(row.username);
                       setEmail(row.email);
+                      setDeleteId("");
                     }}
                   >
                     Edit
@@ -137,18 +175,8 @@ function Users() {
                     type="button"
                     className="btn btn-danger"
                     onClick={() => {
-                      axios
-                        .delete("http://localhost:8080/users/" + row.id, config)
-                        .then(function () {
-                          getUsers();
-                          setMessage("User deleted successfully!");
-                          setError("");
-                        })
-                        .catch(function (error) {
-                          setError("Error deleting user.");
-                          setMessage("");
-                          console.log(error);
-                        });
+                      setDeleteId(row.id);
+                      setDeleteUsername(row.username);
                     }}
                   >
                     Delete
@@ -157,7 +185,41 @@ function Users() {
               </div>
             ))}
 
-          {!edit && (
+        {deleteId && (
+            <div className="card">
+              <div className="card-body">
+              <h2 className="card-title">Delete User: {deleteUsername}</h2>
+                <form onSubmit={deleteUser}>
+                  <div className="mb-3">
+                    <label className="form-label">Current Password</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      onChange={handleInputPassword}
+                      value={inputPassword}
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-danger">
+                    Confirm Delete
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary ms-2"
+                    onClick={() => {
+                      setDeleteId(null);
+                      setInputPassword("");
+                      setDeleteUsername("");
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {!edit && !deleteId && (
             <div className="card">
               <div className="card-body">
                 <h2 className="card-title">Create User</h2>
@@ -201,7 +263,7 @@ function Users() {
             </div>
           )}
 
-          {edit && (
+          {edit && !deleteId && (
             <div className="card">
               <div className="card-body">
                 <h2 className="card-title">Edit User</h2>
@@ -219,7 +281,17 @@ function Users() {
                   </div>
 
                   <div className="mb-3">
-                    <label className="form-label">Password</label>
+                    <label className="form-label">Current Password</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      onChange={handleInputPassword}
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">New Password</label>
                     <input
                       type="password"
                       className="form-control"

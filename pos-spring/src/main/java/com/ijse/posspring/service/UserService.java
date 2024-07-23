@@ -12,7 +12,7 @@ public interface UserService {
     List<User> getAllUseres();
     User getUserById(Long id);
     User createUser(User user);
-    User updateUser(Long id, User user);
-    void deleteUser(Long id);
+    User updateUser(Long id, User user, String password);
+    boolean deleteUser(Long id ,String password);
     
 }
