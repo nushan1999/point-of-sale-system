@@ -11,6 +11,9 @@ function Users() {
   const [email, setEmail] = useState("");
   const [edit, setEdit] = useState(null);
 
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
   const config = {
     headers: {
       Authorization: `Bearer ${jwtToken}`
@@ -66,9 +69,13 @@ function Users() {
       .post("http://localhost:8080/users", data, config)
       .then(function (response) {
         getUsers();
+        setMessage("User created successfully!");
+        setError("");
         console.log(response);
       })
       .catch(function (error) {
+        setError("Error creating user.");
+        setMessage("");
         console.log(error);
       });
   }
@@ -87,9 +94,13 @@ function Users() {
       .then(function (response) {
         getUsers();
         setEdit(null);
+        setMessage("User updated successfully!");
+        setError("");
         console.log(response);
       })
       .catch(function (error) {
+        setError("Error updating user.");
+        setMessage("");
         console.log(error);
       });
   }
@@ -100,6 +111,9 @@ function Users() {
         <div className="col-md-8">
           <h1 className="text-center mb-4">Users</h1>
 
+          {message && <div className="alert alert-success">{message}</div>}
+          {error && <div className="alert alert-danger">{error}</div>}
+          
           {users &&
             users.map((row) => (
               <div className="card mb-3" key={row.id}>
@@ -127,8 +141,12 @@ function Users() {
                         .delete("http://localhost:8080/users/" + row.id, config)
                         .then(function () {
                           getUsers();
+                          setMessage("User deleted successfully!");
+                          setError("");
                         })
                         .catch(function (error) {
+                          setError("Error deleting user.");
+                          setMessage("");
                           console.log(error);
                         });
                     }}
