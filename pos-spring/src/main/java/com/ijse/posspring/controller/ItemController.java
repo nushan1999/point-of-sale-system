@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ijse.posspring.dto.ItemDto;
 import com.ijse.posspring.entity.Item;
 import com.ijse.posspring.entity.ItemCategory;
-import com.ijse.posspring.entity.Stock;
 import com.ijse.posspring.service.ItemCategoryService;
 import com.ijse.posspring.service.ItemService;
 import com.ijse.posspring.service.StockService;
